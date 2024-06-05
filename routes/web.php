@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +14,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::post('/users', [UserController::class, 'store']);
+Route::get('/csrf-token', function () {
+    return csrf_token();
+});
 Route::get('/', function () {
     return view('welcome');
 });
