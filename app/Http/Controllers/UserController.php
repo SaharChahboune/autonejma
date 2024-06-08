@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Services\UserService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class UserController extends Controller
 {
@@ -21,15 +24,37 @@ class UserController extends Controller
             'prenom' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
-            'role' => 'required|string|in:administrateur,demandeur',
+            'confpassword' => 'required|string|min:8',
+        ]);
+        $user = $this->userService->createDemandeur($data);
+
+        return redirect()->route('index')->with('success', 'User created successfully.');
+    }
+
+    public function login(Request $request)
+    {
+        $credentials = $request->validate([
+            'email' => 'required|string|email',
+            'password' => 'required|string',
         ]);
 
-        if ($data['role'] === 'administrateur') {
-            $user = $this->userService->createAdministrateur($data);
-        } else {
-            $user = $this->userService->createDemandeur($data);
+        $user = User::where('email', $credentials['email'])->first();
+
+        if (!$user || !Hash::check($credentials['password'], $user->password)) {
+            return response()->json(['message' => 'User not found'], 404);
         }
 
-        return response()->json($user, 201);
+        Auth::login($user);
+
+        session([
+            'user_id' => $user->id,
+            'nom' => $user->nom,
+            'prenom' => $user->prenom,
+            'email' => $user->email,
+            'role' => $user->role,
+        ]);
+
+        // Redirect to another page
+        return redirect()->route('autonejma');
     }
 }

@@ -14,10 +14,19 @@ use App\Http\Controllers\UserController;
 |
 */
 
-Route::post('/users', [UserController::class, 'store']);
+Route::post('/signup', [UserController::class, 'store'])->name('signup');
+Route::get('/signup', function(){
+    return view('register');
+})->name('signup.request');
+
 Route::get('/csrf-token', function () {
     return csrf_token();
 });
 Route::get('/', function () {
-    return view('welcome');
-});
+    return view('index');
+})->name('index');;
+Route::get('/app', function () {
+    return view('autonejma');
+})->name('autonejma');;
+Route::post('/login', [UserController::class, 'login'])->name('login');
+Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');

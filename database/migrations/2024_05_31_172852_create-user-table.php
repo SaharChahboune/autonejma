@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('prenom');
             $table->string('email')->unique();
             $table->string('password');
-            $table->enum('role', ['administrateur', 'demandeur','user'])->default('user');
+            $table->enum('role', ['administrateur', 'demandeur','user'])->default('demandeur');
             $table->timestamps();
         });
     }
